@@ -37,3 +37,48 @@ The formers (excluding determinants) underline a specific sentence construction,
 On the other side we see that Wikipedia has more Nouns, Verbs a higher density of words and token, indicating a more semantically dense text, possibly less literaire, but more informative.
 
 ## 2. Machine Learning
+
+For the Machine Learning we are interested in two things. 
+First, can we learn two identify easily the two classes.
+Second, can we learn intermediate representation on the way.
+
+In our experiment, we find that yes we can learn to classify these two classes, with a model as simple as a LogisticRegression.
+This is not very surprising given the findings in the last section.
+We achieve, in a train-test setting, a balanced accuracy of 100%, showing that the model succeed to learn a perfect representation of the data.
+
+As stated this is not surprising given the result of the last section, but this is surprising in the sens that such effects are generally not expected. 
+It is true that reading both encyclopedia differences can be seen, but some preprocessing error could also be influential here.
+
+We also find that, with or without PCA, the model performs perfectly.
+This allow us to dig deeper and analyse the fundamental dimensions
+
+## 3. PCA
+
+Our model perform as well with 3 or 15 dimensions.
+We will thus study only the two dimensions which are the more relevant for the model to identify class 0 and class 1, respectively Universalis and Wikipedia.
+
+### Class 1 (Wikipedia) main dimension
+
+The main dimension expressing Wikipedia articles depend principally over the diversity of the text.
+Wikipedia display a way higher diversity of token compared to Universalis.
+Second of all, this dimension depend heavily on Nouns and Verbs.
+Last, this dimension rely on the passive voice.
+
+THe first two observation indicate that we have many clause with Nouns and Verbs, and that these clause uses different vocabulary if possible. This also underline the idea that Universalis would be composed of more redundant vocabulary with less informative sentences.
+
+The last observation is more of grammatical nature, which could be a mark of the neutrality / objectivity tone that Wikipedia tries to enforce as a guideline.
+
+This dimension is also inversly correlated to Adpositions, Determinants, Active voice, Conjunctions and Auxiliaries.
+This renforce our idea of dense and short sentences, because Adposition and Conjuctions are rejected. 
+
+### Class 2 (Universalis) main dimension
+
+The main dimension of Universalis is the one explaining the less the variance of the data, even though Universalis represent 20 times more articles than Wikipedia in our dataset !
+
+This dimension is correlated to high density of Pronouns, Verbs, Subordinate, Imperative and Singular.
+While we saw that Verbs are representing the first dimension pretty well, we find them here two, but with different companions.
+Instead of Nouns, we have Pronouns and Subordinate.
+Alors we have an indication toward which kind of sentence should we expect, with the Singular and the Imperative.
+
+On the other side we have a reject of Plural and Present, of Adjectives and Nouns, and of the Indicative mood.
+THis shows again a deeper stylistic difference in both encyclopedia.
