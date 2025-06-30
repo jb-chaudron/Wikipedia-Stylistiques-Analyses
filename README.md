@@ -30,8 +30,10 @@ We observe that some properties are consistently more frequent in some text than
 This figure shows us the cohen's D (upper) and cliff's Delta (lower).
 Because we can't really suppose a normality distribution of the data, we'll focus on cliff's Delta.
 What we see is that there is indeed some features that are consistently more frequent that other in Wikipedia over Universalis (and vice versa).
+
 Among them we see that Universalis is specific by its prevalence of Determinants and Adpositions, other that we don't see here are conjunct of coordination and of suboordination.
 The formers (excluding determinants) underline a specific sentence construction, with less condensed forms of writing, longer sentences with multiple ideas in them.
+
 On the other side we see that Wikipedia has more Nouns, Verbs a higher density of words and token, indicating a more semantically dense text, possibly less literaire, but more informative.
 
 ## 2. Machine Learning
