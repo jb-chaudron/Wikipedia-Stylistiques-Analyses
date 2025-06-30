@@ -1,15 +1,22 @@
 import matplotlib.pyplot as plt 
 from matplotlib.patches import Patch
 from numpy.typing import NDArray
-from .stat_analyses import cohen_d, cliff_delta
+try:
+    from .stat_analyses import cohen_d, cliff_delta
+except:
+    from stat_analyses import cohen_d, cliff_delta
 from scipy.stats import shapiro
 import numpy as np
 from tqdm import tqdm
 
+#Uncomment to see the time spent on each line using "kernprof -l -v path_to_file"
+#@profile
 def effect_size_distribution(X_wikipedia : NDArray ,
                              X_universalis : NDArray,
                              columns : list[str],
-                             max_features : int = 10) -> None :
+                             path_figure : str,
+                             max_features : int = 10,
+                             ) -> tuple[list,list,list,list] :
     
     # Variable that'll store the normality check
     normality = []
@@ -39,11 +46,12 @@ def effect_size_distribution(X_wikipedia : NDArray ,
                             figsize=(10,7),
                             sharex=False)
     
-    best_columns_D = np.argsort([d for d,_ in D])[:max_features]
-    best_columns_cliff = np.argsort([delt for delt,_ in delta])[:,max_features]
+    best_columns_D = np.argsort([abs(d) for d,_ in D])[-max_features:][::-1]
+    best_columns_cliff = np.argsort([abs(delt) for delt,_ in delta])[-max_features:][::-1]
     
-    bars = ax[0].bar(x=columns[best_columns_D],
-                    y=np.array([d for d,_ in D])[best_columns_D],
+    bars = ax[0].bar(x=np.array(columns)[best_columns_D],
+                    height=np.array([d for d,_ in D])[best_columns_D],
+                    width=0.4
                     )
     
     # Assign hatch only to non-normal bars
@@ -58,7 +66,37 @@ def effect_size_distribution(X_wikipedia : NDArray ,
         ]
     
     ax[0].legend(handles=legend_handles)
+    ax[0].tick_params(axis="x",rotation=45)
+    ax[1].bar(x=np.array(columns)[best_columns_cliff],
+              height=np.array([delt for delt,_ in delta])[best_columns_cliff],
+              width = 0.4)
+    ax[1].tick_params(axis="x",rotation=45)
 
-    ax[1].bar(x=columns[best_columns_cliff],
-              y=np.array([delt for delt,_ in delta])[best_columns_cliff])
+    plt.savefig(path_figure,
+                dpi=400,
+                bbox_inches="tight")
     
+    return (columns, delta, D, normality)
+
+
+if __name__ == "__main__":
+    import pandas as pd 
+    import joblib
+
+    df_universalis = pd.read_csv("/media/jbulkatravail/DATA2/JB_HD/Thèse/Coffre Fort Thèse/XP_thèse/Classification/Données/data_universalis.csv",
+    index_col=0)
+
+    df_wiki = joblib.load("/media/jbulkatravail/DATA2/JB_HD/Thèse/Coffre Fort Thèse/XP_thèse/Classification/Notebooks/data/df_wiki.joblib")
+    df_wiki = pd.DataFrame([df.mean(0) for df in tqdm(df_wiki)])
+    df_wiki.columns = [x if not "POS" in x else x.split("POS -")[1] for x in df_wiki.columns]
+
+    df_universalis.fillna(0, inplace=True)
+    df_wiki.fillna(0, inplace=True)
+
+
+    columns = [x for x in df_wiki.columns if x in df_universalis.columns]
+    df_wiki = df_wiki.loc[:,columns]
+    df_universalis = df_universalis.loc[:,columns]
+    effect_size_distribution(df_wiki.to_numpy()[:,:5],
+                        df_universalis.to_numpy()[:,:5],
+                            columns=columns[:5])

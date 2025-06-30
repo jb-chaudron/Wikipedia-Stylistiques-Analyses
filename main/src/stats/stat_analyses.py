@@ -46,7 +46,7 @@ def cliff_delta(data1 : NDArray,
 
     # Here we measur the superiority of the distribution 1 over the distribution 2
     superiority = lambda dist1, dist2 : np.sum([sum(d1 > dist2) for d1 in dist1])
-    sup1, sup2 = superiority(dist1=data1, dist2=data2), superiority(dist1=data2, dist2=data1)
+    sup1, sup2 = optimized_superiority(dist1=data1, dist2=data2), optimized_superiority(dist1=data2, dist2=data1)
     sample_size = len(data1)*len(data2)
 
     delta = (sup1-sup2)/sample_size
@@ -54,3 +54,8 @@ def cliff_delta(data1 : NDArray,
 
     return (delta, sense)
 
+def optimized_superiority(dist1, dist2):
+    dist1 = np.array(dist1)
+    dist2 = np.array(dist2)
+    comparison = dist1[:, None] > dist2  # shape (len(dist1), len(dist2))
+    return np.sum(comparison)
